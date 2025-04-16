@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fraud Detection Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: linear-gradient(to right, #111827, #1f2937);
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chart-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .chart-container .chart {
+      width: 48%;
+    }
+  </style>
+</head>
+<body class="text-white font-sans">
+
+  <!-- Hero Banner -->
+  <div class="relative h-64 bg-cover bg-center rounded-b-3xl shadow-lg mb-10" style="background-image: url('https://images.unsplash.com/photo-1556742049-908ade3e00b1');">
+    <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center text-white text-center">
+      <div>
+        <h1 class="text-4xl font-bold">Fraud Detection Dashboard</h1>
+        <p class="text-lg text-gray-300 mt-2">Track, analyze & act on suspicious transactions in real-time</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 px-6 mb-12">
+    <div class="glass p-6 rounded-2xl shadow-lg">
+      <p class="text-sm text-gray-400 mb-1">Total Transactions</p>
+      <h3 id="total-transactions" class="text-3xl font-bold text-indigo-400 mb-2">Loading...</h3>
+      <p class="text-sm text-green-400">↑</p>
+    </div>
+
+    <div class="glass p-6 rounded-2xl shadow-lg">
+      <p class="text-sm text-gray-400 mb-1">Flagged Transactions</p>
+      <h3 id="flagged-transactions" class="text-3xl font-bold text-red-400 mb-2">Loading...</h3>
+      <p class="text-sm text-red-300">↑</p>
+    </div>
+
+    <div class="glass p-6 rounded-2xl shadow-lg">
+      <p class="text-sm text-gray-400 mb-1">Total Processed</p>
+      <h3 id="total-processed" class="text-3xl font-bold text-emerald-400 mb-2">Loading...</h3>
+      <p class="text-sm text-emerald-300">+ $</p>
+    </div>
+
+    <div class="glass p-6 rounded-2xl shadow-lg">
+      <p class="text-sm text-gray-400 mb-1">AI Confidence Score</p>
+      <h3 id="ai-confidence" class="text-3xl font-bold text-blue-400 mb-2">Loading...</h3>
+      <p class="text-sm text-blue-300">High accuracy</p>
+    </div>
+  </div>
+
+  <!-- Transaction Trends Chart -->
+  <div class="glass mx-6 rounded-2xl shadow-lg p-6 mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-white">Transaction Trends</h2>
+    <canvas id="transactionChart" height="100"></canvas>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="glass mx-6 p-6 rounded-2xl shadow-lg mb-10">
+    <h2 class="text-xl font-semibold mb-4 text-white">Recent Transactions</h2>
+    <div id="recent-transactions" class="space-y-4">
+      <!-- Transactions will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <!-- JavaScript to fetch data from Flask API -->
+  <script>
+    async function fetchDashboardData() {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/all_data");
+        const data = await response.json();
+
+        const stats = data.stats;
+        const transactions = data.transactions;
+
+        // ✅ Fixing JS template literals
+        document.getElementById("total-transactions").innerText = stats.total_transactions;
+        document.getElementById("flagged-transactions").innerText = stats.flagged_transactions;
+        document.getElementById("total-processed").innerText = $${stats.total_amount_processed.toLocaleString()};
+        document.getElementById("ai-confidence").innerText = ${stats.ai_confidence_score}%;
+
+        // Sample dynamic data for chart
+        const transactionCounts = Array(5).fill(0).map(() => Math.floor(Math.random() * 2000 + 500));
+
+        // Transaction Trends Chart
+        const ctx1 = document.getElementById('transactionChart').getContext('2d');
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: ['Apr 1', 'Apr 5', 'Apr 9', 'Apr 13', 'Apr 16'],
+            datasets: [{
+              label: 'Transactions',
+              data: transactionCounts,
+              fill: true,
+              backgroundColor: 'rgba(248, 113, 113, 0.2)',
+              borderColor: '#f87171',
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            animation: { duration: 1000, easing: 'easeInOutQuad' },
+            plugins: {
+              legend: { labels: { color: '#ffffff' }, position: 'top' },
+              tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+              x: {
+                ticks: { color: '#ddd' },
+                grid: { color: 'rgba(255,255,255,0.05)' }
+              },
+              y: {
+                beginAtZero: true,
+                ticks: { color: '#ddd' },
+                grid: { color: 'rgba(255,255,255,0.05)' }
+              }
+            }
+          }
+        });
+
+        // Populate Recent Transactions
+        const container = document.getElementById('recent-transactions');
+        container.innerHTML = '';
+
+        transactions.forEach(tx => {
+          let label = 'Safe', color = 'green';
+          if (tx.riskScore > 75) {
+            label = 'High Risk';
+            color = 'red';
+          } else if (tx.riskScore > 50) {
+            label = 'Suspicious';
+            color = 'yellow';
+          }
+
+          container.innerHTML += `
+            <div class="flex justify-between items-center border-b border-gray-700 pb-3">
+              <div>
+                <p class="font-medium text-white">${tx.description}</p>
+                <p class="text-sm text-gray-400">${tx.date}</p>
+                <p class="text-xs text-gray-500">Transaction ID: ${tx.id}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-${color}-300">$${tx.amount.toFixed(2)}</span>
+                <span class="bg-${color}-800 text-${color}-300 text-xs px-2 py-1 rounded-full">${label}</span>
+              </div>
+            </div>
+          `;
+        });
+
+      } catch (err) {
+        console.error("Failed to load data from backend:", err);
+      }
+    }
+
+    // Run on load
+    fetchDashboardData();
+  </script>
+
+</body>
+</html>
