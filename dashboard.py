@@ -8,7 +8,7 @@ def load_data(path: str = 'X_val1.csv') -> pd.DataFrame:
     return pd.read_csv(path)
 
 @st.cache_resource
-def load_model(path: str = 'model3.pkl'):
+def load_model(path: str = 'model_main.pkl'):
     """Load the trained fraud-detection model."""
     return joblib.load(path)
 
@@ -21,7 +21,7 @@ def main():
     # Sidebar controls
     st.sidebar.header("Settings")
     data_path = st.sidebar.text_input("Test data CSV path", value="X_val1.csv")
-    model_path = st.sidebar.text_input("Trained model path", value="model3.pkl")
+    model_path = st.sidebar.text_input("Trained model path", value="model_main.pkl")
     show_raw = st.sidebar.checkbox("Show raw data", value=False)
 
     # Load data & model
