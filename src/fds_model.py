@@ -8,8 +8,7 @@ import joblib
 from xgboost import XGBClassifier
 from xgboost import callback
 from sklearn.model_selection import train_test_split
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder 
+
 from sklearn.model_selection import cross_val_score,cross_val_predict,RepeatedStratifiedKFold 
 from sklearn.metrics import classification_report,confusion_matrix,roc_auc_score
 
@@ -38,7 +37,7 @@ print("Mean Cross Validation score",np.mean(CV_scores))
 predictions = fd_model.predict(test_X)
 probablity = fd_model.predict_proba(test_X)[:,1]
 #setting threshold to increase recall of the failure class
-threshold = 0.4
+threshold = 0.2
 custom_predictions = (probablity >= threshold).astype(int)
 #printing the classification report for precision,recall,f1score
 print("Classification Report:")
@@ -49,8 +48,8 @@ print (confusion_matrix(test_y,custom_predictions))
 #Calculate the roc-aur score
 roc_auc = roc_auc_score(test_y,custom_predictions)
 print("ROC-AUC score:",roc_auc)
-joblib.dump(fd_model,'model3.pkl')
-print("model saved as model3.pkl") 
+joblib.dump(fd_model,'model_main.pkl')
+print("model saved as model_main.pkl") 
 
 
 
