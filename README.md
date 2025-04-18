@@ -8,9 +8,9 @@ Hey, This is our end-to-end pipeline for detecting fraudulent credit card transa
 
 1. Clone and install:
     ```
-   -git clone https://github.com/techvibration/fraud-detection-system.git
-   -cd fraud-detection
-   -pip install -r requirements.txt
+   git clone https://github.com/techvibration/fraud-detection-system.git
+   cd fraud-detection
+   pip install -r requirements.txt
     ```
  2. Train the model:
     ```
