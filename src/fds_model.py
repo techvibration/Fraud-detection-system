@@ -3,7 +3,7 @@ import pandas as pd
 import xgboost as xgb
 #print("XGBoost version:", xgb.__version__)
 from imblearn.combine import SMOTETomek
-import optuna   
+
 import joblib
 from xgboost import XGBClassifier
 from xgboost import callback
