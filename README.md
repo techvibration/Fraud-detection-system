@@ -55,9 +55,9 @@ Hey, This is our end-to-end pipeline for detecting fraudulent credit card transa
 
 🎓 Next Steps
 
--Experiment with additional feature engineering (time‑based velocity, merchant categories).
--Compare unsupervised anomaly detection methods (Isolation Forest, Autoencoder).
--Integrate a real‑time data stream (Kafka, Pub/Sub) for live scoring.
+- Experiment with additional feature engineering (time‑based velocity, merchant categories).
+- Compare unsupervised anomaly detection methods (Isolation Forest, Autoencoder).
+- Integrate a real‑time data stream (Kafka, Pub/Sub) for live scoring.
 
 ---
 
